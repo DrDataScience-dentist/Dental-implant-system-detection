@@ -1,0 +1,7 @@
+streamlit
+roboflow
+requests
+matplotlib
+pandas
+opencv-python
+fpdf
