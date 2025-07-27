@@ -1,0 +1,2 @@
+mkdir fonts
+wget https://github.com/dejavu-fonts/dejavu-fonts/blob/master/ttf/DejaVuSans.ttf?raw=true -O fonts/DejaVuSans.ttf
