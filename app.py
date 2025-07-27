@@ -4,108 +4,94 @@ from PIL import Image, ImageDraw
 import tempfile
 from fpdf import FPDF
 import os
-import requests
-from io import BytesIO
 
-# --------- PAGE CONFIG -----------
-st.set_page_config(page_title="🦷 Implant System Detection", layout="wide")
-st.title("🦷 Implant System Detection System")
-st.markdown("Upload an OPG/RVG image to detect implants using three different AI models.")
+# ----- CONFIGURATION -----
+st.set_page_config(page_title="🦷 Implant System Detection App", layout="centered")
+st.title("🦷 Implant System Detection")
+st.markdown("Upload an OPG/RVG image to detect implants using multiple models.")
 
-# ---------- ROBOLFLOW SETUP -----------
-rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
+# ---- Roboflow API Key ----
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")  # Replace with your actual API key
 project = rf.workspace("implant-system-identification").project("implant-system-detection")
+model_v7 = project.version(7).model
+model_v8 = project.version(8).model
+model_v4 = project.version(4).model
 
-models = {
-    "YOLOv11 (v8)": project.version(8).model,
-    "YOLOv8 (v4)": project.version(4).model,
-    "RF-DETR (v7)": project.version(7).model,
-}
+# ----- IMAGE UPLOAD -----
+uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
-# ---------- IMAGE UPLOAD -----------
-uploaded_images = st.file_uploader("Upload OPG or RVG Images", type=['jpg', 'jpeg', 'png'], accept_multiple_files=True)
+if uploaded_file:
+    image = Image.open(uploaded_file).convert("RGB")
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
-results_data = []
-if uploaded_images:
-    for uploaded_image in uploaded_images:
-        st.subheader(f"Results for {uploaded_image.name}")
+    # Save uploaded image temporarily
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp:
+        image.save(temp.name)
+        img_path = temp.name
 
-        img = Image.open(uploaded_image).convert("RGB")
-        buffered = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
-        img.save(buffered.name)
+    st.markdown("### Predictions:")
+    predictions = []
 
-        cols = st.columns(len(models))
-        for idx, (model_name, model) in enumerate(models.items()):
-            with cols[idx]:
-                st.markdown(f"**{model_name}**")
-                pred = model.predict(buffered.name, confidence=40, overlap=30).json()
+    for name, model in zip(["YOLOv7 RF DETR", "YOLOv11 v8", "YOLOv8 v4"], [model_v7, model_v8, model_v4]):
+        result = model.predict(img_path, confidence=40, overlap=30).json()
+        pred_image = image.copy()
+        draw = ImageDraw.Draw(pred_image)
 
-                draw = ImageDraw.Draw(img.copy())
-                output_img = img.copy()
+        st.subheader(f"Model: {name}")
 
-                for detection in pred['predictions']:
-                    x1 = detection['x'] - detection['width'] / 2
-                    y1 = detection['y'] - detection['height'] / 2
-                    x2 = detection['x'] + detection['width'] / 2
-                    y2 = detection['y'] + detection['height'] / 2
+        for pred in result['predictions']:
+            x0 = int(pred['x'] - pred['width'] / 2)
+            y0 = int(pred['y'] - pred['height'] / 2)
+            x1 = int(pred['x'] + pred['width'] / 2)
+            y1 = int(pred['y'] + pred['height'] / 2)
+            draw.rectangle([x0, y0, x1, y1], outline="red", width=2)
+            draw.text((x0, y0 - 10), f"{pred['class']} ({pred['confidence']*100:.1f}%)", fill="red")
 
-                    draw.rectangle([x1, y1, x2, y2], outline="red", width=2)
-                    draw.text((x1, y1 - 10), f"{detection['class']} ({detection['confidence']*100:.1f}%)", fill="red")
+        st.image(pred_image, caption=f"Predictions from {name}", use_container_width=True)
+        predictions.append((name, pred_image))
 
-                st.image(output_img, caption="Predictions", use_container_width=True)
-
-                # Collect data for PDF
-                results_data.append({
-                    "image_name": uploaded_image.name,
-                    "model_name": model_name,
-                    "predictions": pred['predictions']
-                })
-
-# ---------- PDF EXPORT -----------
-if results_data:
+    # ----- PDF GENERATION -----
     if st.button("Generate PDF Report"):
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
+        pdf.add_page()
+        pdf.set_font("Arial", size=14)
+        pdf.cell(200, 10, txt="🦷 Dental Implant Detection Report", ln=True, align='C')
+        pdf.ln(10)
 
-        for result in results_data:
-            pdf.add_page()
-            pdf.set_font("Arial", size=14)
-            pdf.cell(200, 10, txt="Implant System Detection Report", ln=True, align="C")
-            pdf.ln(10)
+        for model_name, pred_img in predictions:
+            # Save prediction image to temp
+            pred_path = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg").name
+            pred_img.save(pred_path)
 
             pdf.set_font("Arial", size=12)
-            pdf.cell(200, 10, txt=f"Image: {result['image_name']}", ln=True)
-            pdf.cell(200, 10, txt=f"Model: {result['model_name']}", ln=True)
-            pdf.ln(5)
-            for pred in result['predictions']:
-                label = pred['class']
-                confidence = pred['confidence'] * 100
-                pdf.cell(200, 10, txt=f"Prediction: {label}, Confidence: {confidence:.1f}%", ln=True)
+            pdf.cell(200, 10, txt=model_name, ln=True, align='L')
+            pdf.image(pred_path, w=pdf.w * 0.7)
+            pdf.ln(10)
 
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Created by Dr. Balaganesh", ln=True)
-        pdf.cell(200, 10, txt="Gmail: drbalaganesh.dentist@gmail.com", ln=True)
-        pdf.cell(200, 10, txt="LinkedIn: https://www.linkedin.com/in/drbalaganeshdentist/", ln=True)
-        pdf.cell(200, 10, txt="Instagram: https://www.instagram.com/_bala.7601/", ln=True)
+        # Contact Section
+        pdf.ln(10)
+        pdf.set_font("Arial", size=10)
+        pdf.cell(200, 10, txt="Created by Dr Balaganesh P", ln=True, align='C')
+        pdf.cell(200, 10, txt="LinkedIn: https://www.linkedin.com/in/drbalaganeshdentist/", ln=True, align='C')
+        pdf.cell(200, 10, txt="Instagram: https://www.instagram.com/_bala.7601/", ln=True, align='C')
+        pdf.cell(200, 10, txt="Gmail: drbalaganesh.dentist@gmail.com", ln=True, align='C')
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as pdf_file:
-            pdf.output(pdf_file.name)
-            with open(pdf_file.name, "rb") as f:
-                st.download_button("Download PDF", f, file_name="Implant_Report.pdf")
+        # Save and show download link
+        pdf_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
+        pdf.output(pdf_output_path)
+        with open(pdf_output_path, "rb") as f:
+            st.download_button(label="📄 Download PDF Report", data=f, file_name="Implant_Report.pdf")
 
-# ---------- CONTACT SECTION -----------
+# ----- CONTACT AND CREDITS SECTION -----
 st.markdown("---")
-st.markdown("### 📬 Connect with Me")
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.markdown("[![Gmail](https://img.icons8.com/fluency/48/gmail.png)](mailto:drbalaganesh.dentist@gmail.com)", unsafe_allow_html=True)
-with col2:
-    st.markdown("[![GitHub](https://img.icons8.com/ios-filled/50/github.png)](https://github.com/DrDataScience-dentist)", unsafe_allow_html=True)
-with col3:
-    st.markdown("[![LinkedIn](https://img.icons8.com/color/48/linkedin.png)](https://www.linkedin.com/in/drbalaganeshdentist/)", unsafe_allow_html=True)
-with col4:
-    st.markdown("[![Instagram](https://img.icons8.com/color/48/instagram-new.png)](https://www.instagram.com/_bala.7601/)", unsafe_allow_html=True)
-
-st.markdown("<style>img { height: 35px !important; }</style>", unsafe_allow_html=True)
+st.markdown("### 📬 Contact")
+st.markdown("""
+<p style='text-align: center;'>
+    <a href="mailto:drbalaganesh.dentist@gmail.com" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" width="30"></a>
+    <a href="https://github.com/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" width="30"></a>
+    <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30"></a>
+    <a href="https://www.instagram.com/_bala.7601/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30"></a>
+</p>
+<p style='text-align: center;'>Created by Dr Balaganesh P</p>
+""", unsafe_allow_html=True)
