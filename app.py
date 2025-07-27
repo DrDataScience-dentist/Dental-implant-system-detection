@@ -24,7 +24,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --------- INITIALIZE ROBOFLOW MODELS ---------
-rf = Roboflow(api_key="YOUR_API_KEY")
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
 
 project_v7 = rf.workspace("implant-system-identification").project("implant-system-detection")
 model_v7 = project_v7.version(7).model
