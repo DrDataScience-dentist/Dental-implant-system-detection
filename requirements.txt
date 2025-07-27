@@ -3,3 +3,5 @@ roboflow
 opencv-python-headless
 Pillow
 requests
+ultralytics
+torch
