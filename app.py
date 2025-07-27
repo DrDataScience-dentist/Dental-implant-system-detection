@@ -24,7 +24,7 @@ class PDF(FPDF):
         self.cell(0, 10, f"Page {self.page_no()}", 0, 0, 'C')
 
 # ----------------- INIT ROBOFLOW -----------------
-rf = Roboflow(api_key="your_roboflow_api_key")
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
 project = rf.workspace("implant-system-identification").project("implant-system-detection")
 model7 = project.version(7).model  # RF-DETR
 model8 = project.version(8).model  # YOLOv11
