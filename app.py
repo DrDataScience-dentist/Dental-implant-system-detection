@@ -13,15 +13,7 @@ st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
-# --------- CONTACT LINKS ----------
-st.markdown("""
-### 📬 Contact
-<a href="mailto:drbalaganesh.dentist" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30"></a>
-<a href="https://github.com/balaganesh7601" target="_blank"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30"></a>
-<a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30"></a>
-<a href="https://www.instagram.com/_bala.7601/" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30"></a>
-<p style='margin-top: 10px;'>Created by <b>Dr Balaganesh P</b></p>
-""", unsafe_allow_html=True)
+
 
 # --------- INITIALIZE ROBOFLOW MODELS ---------
 rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
