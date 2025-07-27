@@ -73,9 +73,9 @@ if uploaded_file:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.subheader("🔷 YOLOv7 - RF DETR")
+        st.subheader("🔷RF DETR")
         pred_img_v7, data_v7 = predict_and_draw(model_v7, image_path)
-        st.image(pred_img_v7, caption="YOLOv7 Prediction", use_container_width=True)
+        st.image(pred_img_v7, caption="RF DETR", use_container_width=True)
         st.dataframe(pd.DataFrame(data_v7))
 
     with col2:
@@ -106,7 +106,7 @@ if uploaded_file:
                 pdf.cell(200, 10, txt=f"Class: {item['Class']}, Confidence: {item['Confidence (%)']}%", ln=True)
             pdf.ln(5)
 
-        add_prediction_section("YOLOv7 - RF DETR", data_v7)
+        add_prediction_section("RF DETR", data_v7)
         add_prediction_section("YOLOv11 - YOLOv8", data_v8)
         add_prediction_section("YOLOv8 - Original", data_v4)
 
