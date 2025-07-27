@@ -5,4 +5,4 @@ Pillow
 requests
 ultralytics
 torch
-fpdf
+fpdf2
