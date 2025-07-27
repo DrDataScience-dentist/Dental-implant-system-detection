@@ -12,8 +12,8 @@ st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect dental implants and generate a report.")
 
 # ---------- SETUP ----------
-rf = Roboflow(api_key="YOUR_API_KEY")
-project = rf.workspace().project("your-project-name")
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
+project = rf.workspace("implant-system-identification").project("implant-system-detection")
 model = project.version("x").model
 
 # ---------- FUNCTIONS ----------
