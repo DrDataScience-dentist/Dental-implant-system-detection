@@ -1,7 +1,5 @@
 streamlit
 roboflow
+opencv-python-headless
+Pillow
 requests
-matplotlib
-pandas
-opencv-python
-fpdf
