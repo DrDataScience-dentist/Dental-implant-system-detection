@@ -1,4 +1,3 @@
-pip install fpdf
 
 import streamlit as st
 from roboflow import Roboflow
