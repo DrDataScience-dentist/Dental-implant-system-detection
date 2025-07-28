@@ -76,9 +76,7 @@ if uploaded_file:
         st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
         st.dataframe(pd.DataFrame(data_v4))
 
-    if st.button("Generate PDF Report"):
-  
-
+  if st.button("Generate PDF Report"):
     # Save original and predicted images as temp files
     orig_path = os.path.join(tempfile.gettempdir(), "original.jpg")
     pred_path_v7 = os.path.join(tempfile.gettempdir(), "pred_v7.jpg")
@@ -129,6 +127,7 @@ if uploaded_file:
 
     with open(pdf_output_path, "rb") as f:
         st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
+
 
 st.markdown("""
     <style>
