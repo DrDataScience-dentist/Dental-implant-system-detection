@@ -141,9 +141,9 @@ if uploaded_file:
                     pdf.cell(190, 10, txt=f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
                     pdf.ln(5)
 
-            add_each_implant("🔷 RF DETR", data_v7)
-            add_each_implant("🔶 YOLOv11 - YOLOv8", data_v8)
-            add_each_implant("🔴 YOLOv8 - Original", data_v4)
+            add_each_implant("RF DETR", data_v7)
+            add_each_implant("YOLOv11", data_v8)
+            add_each_implant("YOLOv8", data_v4)
 
             # Contact page
             pdf.add_page()
