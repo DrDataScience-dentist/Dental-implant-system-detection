@@ -78,7 +78,7 @@ uploaded_file = st.file_uploader("Upload your OPG/RVG image", type=["jpg", "jpeg
 # --------- MAIN DISPLAY ---------
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", , width=500)
+    st.image(image, caption="Uploaded Image", width=500)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
         image.save(temp_file.name)
