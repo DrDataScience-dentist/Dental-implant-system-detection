@@ -31,9 +31,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.title("🦷 Multi-Model Dental Implant Detection")
-st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
-
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
@@ -114,12 +111,12 @@ if uploaded_file:
         pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
         pdf.ln(35)
         # Adjust this value based on header image height
-        pdf.set_font("Courier", style='BI', size=14)
+        pdf.set_font("Courier", style='B', size=14)
         pdf.cell(200, 10, txt="IMPLANT REPORT", ln=True, align='C')
         pdf.ln(10)
 
         def add_prediction_section(title, data):
-            pdf.set_font("Arial", style='B', size=12)
+            pdf.set_font("Courier", style='B', size=12)
             pdf.cell(200, 10, txt=title, ln=True)
             pdf.set_font("Arial", size=11)
             for item in data:
