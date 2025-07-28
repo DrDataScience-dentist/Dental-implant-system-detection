@@ -5,6 +5,7 @@ from fpdf import FPDF
 import pandas as pd
 import tempfile
 import os
+from PIL import ImageOps
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
@@ -77,7 +78,7 @@ if uploaded_file:
         st.dataframe(pd.DataFrame(data_v4))
 
     if st.button("Generate PDF Report"):
-    from PIL import ImageOps
+  
 
     # Save original and predicted images as temp files
     orig_path = os.path.join(tempfile.gettempdir(), "original.jpg")
