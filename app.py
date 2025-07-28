@@ -119,44 +119,56 @@ if uploaded_file:
 
 st.markdown("""
     <style>
-    .footer {
-        position: fixed;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
+    .footer-container {
+        margin-top: 50px;
         text-align: center;
-        padding: 10px 0;
-        background-color: transparent;
-        z-index: 100;
+        width: 100%;
     }
-    .footer p {
-        margin: 5px;
+
+    .footer-text {
         font-weight: bold;
         color: #444;
+        margin-bottom: 8px;
     }
-    .footer a img {
-        margin: 0 10px;
-        vertical-align: middle;
-        width: 35px;
+
+    .footer-icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .footer-icons a img {
+        width: 30px;
+        transition: transform 0.2s;
+    }
+
+    .footer-icons a img:hover {
+        transform: scale(1.2);
+    }
+
+    /* Optional: Prevent overlap with bottom of the screen on small viewports */
+    .block-container {
+        padding-bottom: 80px;
     }
     </style>
 
-    <div class="footer">
-        <p>Created by Dr Balaganesh P</p>
-        <div>
+    <div class="footer-container">
+        <p class="footer-text">Created by Dr Balaganesh P</p>
+        <div class="footer-icons">
             <a href="mailto:drbalaganesh.dentist" target="_blank">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png">
             </a>
             <a href="https://github.com/balaganesh7601" target="_blank">
-              <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
             </a>
             <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
-              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png">
             </a>
             <a href="https://www.instagram.com/_bala.7601/" target="_blank">
-              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
             </a>
         </div>
     </div>
 """, unsafe_allow_html=True)
-
