@@ -6,6 +6,7 @@ import pandas as pd
 import tempfile
 import os
 import urllib.request
+import base64
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
