@@ -1,11 +1,10 @@
 import streamlit as st
 from roboflow import Roboflow
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 from fpdf import FPDF
 import pandas as pd
 import tempfile
 import os
-from PIL import ImageOps
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
