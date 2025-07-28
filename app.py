@@ -18,24 +18,19 @@ st.set_page_config(page_title="Multi-Model Implant Detection", layout="centered"
 st.title("🦷 Multi-Model Dental Implant Detection")
 
 # ---- Authenticate Google Sheet and Drive ----
+
+
+# Load credentials
 credentials_dict = st.secrets["gcp_service_account"]
-credentials = service_account.Credentials.from_service_account_info(
-    credentials_dict,
-    scopes=["https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"]
-)
+credentials = service_account.Credentials.from_service_account_info(credentials_dict)
 
+# Access Google Sheet
 gc = gspread.authorize(credentials)
+sheet = gc.open("Implant log").sheet1  # Adjust if you're using a different sheet/tab name
 
-# ---- Setup Google Drive ----
-gauth = GoogleAuth()
-gauth.credentials = credentials
-drive = GoogleDrive(gauth)
+# Access Google Drive folder ID
+drive_folder_id = st.secrets["gcp_service_account"]["drive_folder_id"]
 
-# Google Sheet setup
-sheet_name = "Implant log"
-spreadsheet = gc.open(sheet_name)
-worksheet = spreadsheet.sheet1
 
 # Roboflow models
 rf = Roboflow(api_key=st.secrets["ROBOFLOW_API_KEY"])
