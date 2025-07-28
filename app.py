@@ -140,7 +140,6 @@ if uploaded_file:
         add_each_implant("YOLOv8", data_v4)
 
         # --------- Footer Page ---------
-        pdf.add_page()
         pdf.set_y(100)
         pdf.set_font("Arial", style='B', size=14)
         pdf.cell(190, 10, txt="Created by Dr Balaganesh P", ln=True, align='C')
