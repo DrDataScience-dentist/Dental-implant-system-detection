@@ -118,21 +118,45 @@ if uploaded_file:
             st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
 # --------- CONTACT LINKS ----------
+
+# --- FOOTER ---
 st.markdown("""
-### 📬 Contact
-<a href="mailto:drbalaganesh.dentist" target="_blank">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30" style="margin: 10px;">
-</a>
-<a href="https://github.com/balaganesh7601" target="_blank">
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30" style="margin: 10px;">
-</a>
-<a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
-  <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" style="margin: 10px;">
-</a>
-<a href="https://www.instagram.com/_bala.7601/" target="_blank">
-  <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30">
-</a>
+    <style>
+    .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        background-color: white;
+        padding: 10px 0;
+        box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+        z-index: 100;
+    }
+    .footer p {
+        margin: 5px;
+        font-weight: bold;
+    }
+    .footer a img {
+        margin: 0 8px;
+        vertical-align: middle;
+    }
+    </style>
 
-<p style='margin-top: 10px;'>Created by <b>Dr Balaganesh P</b></p>
-
+    <div class="footer">
+        <p>Created by Dr Balaganesh P</p>
+        <div>
+            <a href="mailto:drbalaganesh.dentist" target="_blank">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30">
+            </a>
+            <a href="https://github.com/DrDataScience-dentist" target="_blank">
+              <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30">
+            </a>
+            <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30">
+            </a>
+            <a href="https://www.instagram.com/_bala.7601/" target="_blank">
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30">
+            </a>
+        </div>
+    </div>
 """, unsafe_allow_html=True)
