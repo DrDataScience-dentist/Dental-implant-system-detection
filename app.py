@@ -110,44 +110,57 @@ if uploaded_file:
             st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
             st.dataframe(pd.DataFrame(data_v4).drop(columns=["Image Path"]))
 
-        # --------- PDF GENERATION ---------
-        if st.button("Generate PDF Report"):
-            pdf = FPDF()
+     if st.button("Generate PDF Report"):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # Add first page with header
+    pdf.add_page()
+    pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
+    pdf.ln(35)
+    pdf.set_font("Courier", style='B', size=16)
+    pdf.cell(190, 10, txt="IMPLANT DETECTION REPORT", ln=True, align='C')
+    pdf.ln(10)
+
+    # -------- FUNCTION TO ADD ONE PREDICTION PER PAGE --------
+    def add_each_implant(title, data):
+        for idx, item in enumerate(data):
             pdf.add_page()
-            pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
-            pdf.ln(35)
             pdf.set_font("Courier", style='B', size=14)
-            pdf.cell(200, 10, txt="IMPLANT REPORT", ln=True, align='C')
+            pdf.cell(190, 10, txt=title, ln=True, align='C')
             pdf.ln(10)
 
-            def add_prediction_section(title, data):
-                pdf.set_font("Courier", style='B', size=12)
-                pdf.cell(200, 10, txt=title, ln=True)
-
-                for item in data:
-                    pdf.set_font("Arial", size=11)
-                    pdf.cell(200, 8, txt=f"Class: {item['Class']}, Confidence: {item['Confidence (%)']}%", ln=True)
-                    pdf.image(item["Image Path"], w=50)
-                    pdf.ln(3)
+            # Center the implant image
+            if os.path.exists(item["Image Path"]):
+                pdf.image(item["Image Path"], x=(210 - 80) // 2, w=80)  # 80mm wide, centered
                 pdf.ln(5)
 
-            add_prediction_section("RF DETR", data_v7)
-            add_prediction_section("YOLOv11 - YOLOv8", data_v8)
-            add_prediction_section("YOLOv8 - Original", data_v4)
+            # Add class and confidence, centered
+            pdf.set_font("Arial", size=12)
+            pdf.cell(190, 10, txt=f"Class: {item['Class']}", ln=True, align='C')
+            pdf.cell(190, 10, txt=f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
+            pdf.ln(5)
 
-            pdf.set_font("Arial", size=10)
-            pdf.ln(10)
-            pdf.cell(200, 10, txt="Contact: drbalaganesh.dentist", ln=True, link="mailto:drbalaganesh.dentist")
-            pdf.cell(200, 10, txt="LinkedIn", ln=True, link="https://www.linkedin.com/in/drbalaganeshdentist/")
-            pdf.cell(200, 10, txt="GitHub", ln=True, link="https://github.com/balaganesh7601")
-            pdf.cell(200, 10, txt="Instagram", ln=True, link="https://www.instagram.com/_bala.7601/")
-            pdf.cell(200, 10, txt="Created by Dr Balaganesh P", ln=True)
+    add_each_implant("🔷 RF DETR", data_v7)
+    add_each_implant("🔶 YOLOv11 - YOLOv8", data_v8)
+    add_each_implant("🔴 YOLOv8 - Original", data_v4)
 
-            pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
-            pdf.output(pdf_output_path)
+    # Contact page (last page)
+    pdf.add_page()
+    pdf.set_font("Arial", size=10)
+    pdf.ln(10)
+    pdf.cell(190, 10, txt="Contact: drbalaganesh.dentist", ln=True, link="mailto:drbalaganesh.dentist")
+    pdf.cell(190, 10, txt="LinkedIn", ln=True, link="https://www.linkedin.com/in/drbalaganeshdentist/")
+    pdf.cell(190, 10, txt="GitHub", ln=True, link="https://github.com/balaganesh7601")
+    pdf.cell(190, 10, txt="Instagram", ln=True, link="https://www.instagram.com/_bala.7601/")
+    pdf.cell(190, 10, txt="Created by Dr Balaganesh P", ln=True, align='L')
 
-            with open(pdf_output_path, "rb") as f:
-                st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
+    # Output
+    pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
+    pdf.output(pdf_output_path)
+
+    with open(pdf_output_path, "rb") as f:
+        st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
 # --------- FOOTER ---------
 st.markdown("""
