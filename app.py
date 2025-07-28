@@ -5,14 +5,14 @@ from fpdf import FPDF
 import pandas as pd
 import tempfile
 import os
-rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
-
+# --------- ROBOFLOW INIT -----------
+rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
 project_v7 = rf.workspace("implant-system-identification").project("implant-system-detection")
 model_v7 = project_v7.version(7).model
@@ -23,31 +23,16 @@ model_v8 = project_v8.version(8).model
 project_v4 = rf.workspace("implant-system-identification").project("implant-system-detection")
 model_v4 = project_v4.version(4).model
 
+# --------- SIDEBAR SETTINGS ---------
+st.sidebar.header("🔧 Prediction Settings")
+confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
+overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
+
 # --------- UPLOAD IMAGE ---------
 uploaded_file = st.file_uploader("Upload your OPG/RVG image", type=["jpg", "jpeg", "png"])
 
-if uploaded_file:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_container_width=True)
-
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
-        image.save(temp_file.name)
-        image_path = temp_file.name
-
-    def predict_and_draw(model, image_path):
-        result = model.predict(image_path, confidence=40, overlap=30).json()
-        predictions = result['predictions']
-
-        img = Image.open(image_path).convert("RGB")
-        draw = ImageDraw.Draw(img)
-        data = []
-
-        st.sidebar.header("🔧 Prediction Settings")
-        confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
-        overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
-
-
-        def predict_and_draw(model, image_path):
+# --------- PREDICTION FUNCTION ---------
+def predict_and_draw(model, image_path):
     result = model.predict(image_path, confidence=confidence, overlap=overlap).json()
     predictions = result['predictions']
 
@@ -69,12 +54,21 @@ if uploaded_file:
 
     return img, data
 
+# --------- MAIN DISPLAY ---------
+if uploaded_file:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+        image.save(temp_file.name)
+        image_path = temp_file.name
+
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.subheader("🔷RF DETR")
+        st.subheader("🔷 RF DETR")
         pred_img_v7, data_v7 = predict_and_draw(model_v7, image_path)
-        st.image(pred_img_v7, caption="RF DETR", use_container_width=True)
+        st.image(pred_img_v7, caption="RF DETR Prediction", use_container_width=True)
         st.dataframe(pd.DataFrame(data_v7))
 
     with col2:
@@ -89,6 +83,7 @@ if uploaded_file:
         st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
         st.dataframe(pd.DataFrame(data_v4))
 
+    # --------- PDF GENERATION ---------
     if st.button("Generate PDF Report"):
         pdf = FPDF()
         pdf.add_page()
@@ -122,6 +117,7 @@ if uploaded_file:
         with open(pdf_output_path, "rb") as f:
             st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
+# --------- FOOTER ---------
 st.markdown("""
     <style>
     .footer-container {
