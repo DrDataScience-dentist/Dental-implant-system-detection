@@ -43,9 +43,6 @@ st.markdown(
 )
 
 
-# Show header image
-st.image(header_img, use_container_width=True)
-
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
