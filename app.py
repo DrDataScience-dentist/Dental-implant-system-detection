@@ -117,9 +117,6 @@ if uploaded_file:
         with open(pdf_output_path, "rb") as f:
             st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
-# --------- CONTACT LINKS ----------
-
-# --- FOOTER ---
 st.markdown("""
     <style>
     .footer {
@@ -127,18 +124,19 @@ st.markdown("""
         bottom: 0;
         width: 100%;
         text-align: center;
-        background-color: white;
         padding: 10px 0;
-        box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
+        background-color: transparent;
         z-index: 100;
     }
     .footer p {
         margin: 5px;
         font-weight: bold;
+        color: #444;
     }
     .footer a img {
-        margin: 0 8px;
+        margin: 0 12px;
         vertical-align: middle;
+        width: 35px;
     }
     </style>
 
@@ -146,17 +144,18 @@ st.markdown("""
         <p>Created by Dr Balaganesh P</p>
         <div>
             <a href="mailto:drbalaganesh.dentist" target="_blank">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png">
             </a>
-            <a href="https://github.com/DrDataScience-dentist" target="_blank">
-              <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30">
+            <a href="https://github.com/balaganesh7601" target="_blank">
+              <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
             </a>
             <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
-              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png">
             </a>
             <a href="https://www.instagram.com/_bala.7601/" target="_blank">
-              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30">
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
             </a>
         </div>
     </div>
 """, unsafe_allow_html=True)
+
