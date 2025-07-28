@@ -162,6 +162,7 @@ if uploaded_file:
     with open(pdf_output_path, "rb") as f:
         st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
+
 # --------- FOOTER ---------
 st.markdown("""
     <style>
