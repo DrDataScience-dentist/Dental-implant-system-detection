@@ -93,7 +93,7 @@ if uploaded_file:
     st.markdown(
         f"""
         <div style="text-align: center;">
-            <img src="data:image/jpeg;base64,{img_base64}" width="500">
+            <img src="data:image/jpeg;base64,{img_base64}" width="300">
             <p><em>Uploaded Image</em></p>
         </div>
         """,
