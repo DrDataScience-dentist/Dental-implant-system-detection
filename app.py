@@ -140,19 +140,29 @@ if uploaded_file:
 
 
         def add_each_implant(title, data):
-            title_clean = title.encode("ascii", "ignore").decode()
-            for item in data:
-                pdf.add_page()
-                pdf.set_font("Courier", style='B', size=14)
-                pdf.cell(190, 10, txt=title_clean, ln=True, align='C')
-                pdf.ln(10)
-                if os.path.exists(item["Image Path"]):
-                    pdf.image(item["Image Path"], x=(210 - 80) // 2, w=80)
-                    pdf.ln(5)
-                pdf.set_font("Arial", size=12)
-                pdf.cell(190, 10, txt=f"Class: {item['Class']}", ln=True, align='C')
-                pdf.cell(190, 10, txt=f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
-                pdf.ln(5)
+    title_clean = title.encode("ascii", "ignore").decode()
+    for item in data:
+        pdf.add_page()
+
+        # Title
+        pdf.set_font("Courier", style='B', size=14)
+        pdf.cell(190, 10, txt=title_clean, ln=True, align='C')
+        pdf.ln(10)
+
+        # Image section
+        if os.path.exists(item["Image Path"]):
+            img_width = 80  # set fixed width
+            page_width = 210  # A4 width in mm
+            x_center = (page_width - img_width) / 2  # center horizontally
+            pdf.image(item["Image Path"], x=x_center, w=img_width)
+            pdf.ln(5)
+
+        # Text below image
+        pdf.set_font("Arial", size=12)
+        pdf.cell(190, 10, txt=f"Class: {item['Class']}", ln=True, align='C')
+        pdf.cell(190, 10, txt=f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
+        pdf.ln(5)
+
 
         add_each_implant("RF DETR", data_v7)
         add_each_implant("YOLOv11", data_v8)
