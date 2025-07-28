@@ -2,6 +2,7 @@ streamlit
 google-auth
 gspread
 roboflow
+PyDrive
 opencv-python-headless
 Pillow
 requests
