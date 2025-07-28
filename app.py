@@ -110,7 +110,7 @@ if uploaded_file:
             st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
             st.dataframe(pd.DataFrame(data_v4).drop(columns=["Image Path"]))
 
-     if st.button("Generate PDF Report"):
+    if st.button("Generate PDF Report"):
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
 
