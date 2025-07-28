@@ -78,11 +78,26 @@ uploaded_file = st.file_uploader("Upload your OPG/RVG image", type=["jpg", "jpeg
 # --------- MAIN DISPLAY ---------
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", width=500)
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
         image.save(temp_file.name)
         image_path = temp_file.name
+
+    # Convert image to base64
+    with open(image_path, "rb") as img_file:
+        img_bytes = img_file.read()
+        img_base64 = base64.b64encode(img_bytes).decode()
+
+    # Display centered image with caption
+    st.markdown(
+        f"""
+        <div style="text-align: center;">
+            <img src="data:image/jpeg;base64,{img_base64}" width="500">
+            <p><em>Uploaded Image</em></p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     col1, col2, col3 = st.columns(3)
 
