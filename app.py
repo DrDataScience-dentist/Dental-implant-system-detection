@@ -111,7 +111,7 @@ if uploaded_file:
         # --------- Header Page ---------
        # --------- Header Page ---------
         pdf.add_page()
-        header_url = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png"
+        header_url = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png"
         header_path = os.path.join(tempfile.gettempdir(), "header.png")
         urllib.request.urlretrieve(header_url, header_path)
         pdf.image(header_path, x=10, y=10, w=190)
