@@ -5,6 +5,7 @@ from fpdf import FPDF
 import pandas as pd
 import tempfile
 import os
+rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
@@ -12,7 +13,7 @@ st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
 # --------- INITIALIZE ROBOFLOW MODELS ---------
-rf = Roboflow(api_key="ROBOFLOW_API_KEY")
+rf = Roboflow(api_key)
 
 project_v7 = rf.workspace("implant-system-identification").project("implant-system-detection")
 model_v7 = project_v7.version(7).model
