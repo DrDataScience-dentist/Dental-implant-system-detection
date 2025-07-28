@@ -140,10 +140,10 @@ if uploaded_file:
         add_each_implant("YOLOv8", data_v4)
 
         # --------- Footer Page ---------
-        pdf.set_y(100)
-        pdf.set_font("Arial", style='B', size=14)
+        pdf.set_y(270)  # Move near bottom of the page
+        pdf.set_font("Arial", style='B', size=12)
         pdf.cell(190, 10, txt="Created by Dr Balaganesh P", ln=True, align='C')
-        pdf.ln(10)
+        pdf.ln(5)
 
         icons = {
             "Gmail": ("https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png", "mailto:drbalaganesh.dentist"),
@@ -152,15 +152,19 @@ if uploaded_file:
             "Instagram": ("https://cdn-icons-png.flaticon.com/512/2111/2111463.png", "https://www.instagram.com/_bala.7601/")
         }
 
-        start_x = (210 - (len(icons) * 25)) // 2
+        icon_size = 8  # Small icon size
+        padding = 5
+        total_width = len(icons) * (icon_size + padding)
+        start_x = (210 - total_width) // 2
         y_pos = pdf.get_y()
 
         for i, (name, (url, link)) in enumerate(icons.items()):
             icon_path = os.path.join(tempfile.gettempdir(), f"{name}.png")
             urllib.request.urlretrieve(url, icon_path)
-            x_pos = start_x + i * 25
-            pdf.image(icon_path, x=x_pos, y=y_pos, w=15, h=15)
-            pdf.link(x=x_pos, y=y_pos, w=15, h=15, link=link)
+            x_pos = start_x + i * (icon_size + padding)
+            pdf.image(icon_path, x=x_pos, y=y_pos, w=icon_size, h=icon_size)
+            pdf.link(x=x_pos, y=y_pos, w=icon_size, h=icon_size, link=link)
+
 
         pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
         pdf.output(pdf_output_path)
