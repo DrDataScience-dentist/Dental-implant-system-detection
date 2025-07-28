@@ -32,8 +32,9 @@ gc = gspread.authorize(credentials)
 drive_service = build('drive', 'v3', credentials=credentials)
 
 # Google Sheet setup
-sheet_name = "Implant log"
-spreadsheet = gc.open(sheet_name)
+spreadsheet_id = "1J3_VBfI88EfNnPnrbjnnPQeHD5atOrVa9JTNfhgx6G4"
+spreadsheet = gc.open_by_key(spreadsheet_id)
+
 worksheet = spreadsheet.sheet1
 
 # Roboflow models
