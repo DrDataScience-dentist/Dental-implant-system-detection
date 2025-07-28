@@ -12,36 +12,14 @@ st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
 # Detect Streamlit theme
-st.markdown(
-    """
-    <style>
-    @media (prefers-color-scheme: light) {
-        .header-dark {
-            display: none;
-        }
-    }
+# Detect Streamlit theme
+theme = st.get_option("theme.base")
 
-    @media (prefers-color-scheme: dark) {
-        .header-light {
-            display: none;
-        }
-    }
-
-    .header-container img {
-        width: 100%;
-        border-radius: 12px;
-        margin-bottom: 20px;
-    }
-    </style>
-
-    <div class="header-container">
-        <img class="header-light" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_light.png" />
-        <img class="header-dark" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png" />
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
+# Show correct image based on theme
+if theme == "dark":
+    st.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png", use_container_width=True)
+else:
+    st.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_light.png", use_container_width=True)
 
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
