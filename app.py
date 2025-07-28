@@ -151,7 +151,7 @@ if uploaded_file:
         
                 # Image section
                 if os.path.exists(item["Image Path"]):
-                    img_width = 80  # set fixed width
+                    img_width = 120  # set fixed width
                     page_width = 210  # A4 width in mm
                     x_center = (page_width - img_width) / 2  # center horizontally
                     pdf.image(item["Image Path"], x=x_center, w=img_width)
