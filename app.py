@@ -162,7 +162,7 @@ st.markdown("""
             <a href="mailto:drbalaganesh.dentist" target="_blank">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png">
             </a>
-            <a href="https://github.com/balaganesh7601" target="_blank">
+            <a href="https://github.com/DrDataScience-dentist" target="_blank">
                 <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
             </a>
             <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
