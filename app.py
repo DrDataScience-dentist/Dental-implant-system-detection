@@ -8,6 +8,14 @@ import os
 import datetime
 
 # --------- PAGE CONFIG -----------
+from io import BytesIO
+
+def convert_image_to_displayable(image):
+    buf = BytesIO()
+    image.save(buf, format='PNG')
+    byte_im = buf.getvalue()
+    return byte_im
+
 st.set_page_config(page_title="Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three models: YOLOv8, YOLOv11, and RFDETR")
@@ -42,10 +50,15 @@ if uploaded_file:
 
     # Display side-by-side
     st.markdown("### Detection Results")
-    col1, col2, col3 = st.columns(3)
-    col1.image(pred_v4, caption="YOLOv8")
-    col2.image(pred_v8, caption="YOLOv11")
-    col3.image(pred_v7, caption="RFDETR")
+if pred_v4:
+    col1.image(convert_image_to_displayable(pred_v4), caption="YOLOv8")
+
+if pred_v7:
+    col2.image(convert_image_to_displayable(pred_v7), caption="YOLOv11")
+
+if pred_v8:
+    col3.image(convert_image_to_displayable(pred_v8), caption="RF-DETR")
+
 
     # ----------- PDF GENERATION ------------
     if st.button("Generate PDF Report"):
