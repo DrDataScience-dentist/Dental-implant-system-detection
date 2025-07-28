@@ -32,12 +32,13 @@ st.markdown(
     </style>
 
     <div style="text-align: center; margin-bottom: 20px;">
-        <img class="header-img-light" src="https://github.com/DrDataScience-dentist/Dental-implant-system-detection/blob/main/header_dark.png" style="width: 80%; border-radius: 12px;" />
-        <img class="header-img-dark" src="https://github.com/DrDataScience-dentist/Dental-implant-system-detection/blob/main/header_dark.png" style="width: 80%; border-radius: 12px;" />
+        <img class="header-img-light" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_light.png" style="width: 80%; border-radius: 12px;" />
+        <img class="header-img-dark" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png" style="width: 80%; border-radius: 12px;" />
     </div>
     """,
     unsafe_allow_html=True
 )
+
 
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
