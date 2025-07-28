@@ -9,10 +9,23 @@ import os
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 
-# Use single universal header
-header_img = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png"
-st.image(header_img, use_container_width=True)
-
+# Display full-width edge-to-edge image
+st.markdown(
+    """
+    <style>
+    .full-width-header {
+        position: relative;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        margin-left: -3.5rem;  /* removes Streamlit's side padding */
+        margin-right: -3.5rem;
+    }
+    </style>
+    <img class="full-width-header" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png">
+    """,
+    unsafe_allow_html=True
+)
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
