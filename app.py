@@ -105,19 +105,19 @@ if uploaded_file:
     with col1:
         st.subheader("🔹 RF DETR")
         pred_img_v7, data_v7 = predict_and_draw(model_v7, image_path, "RF")
-        st.image(pred_img_v7, caption="RF DETR Prediction", width="200")
+        st.image(pred_img_v7, caption="RF DETR Prediction", width=200)
         st.dataframe(pd.DataFrame(data_v7).drop(columns=["Image Path"]))
 
     with col2:
         st.subheader("🔶 YOLOv11")
         pred_img_v8, data_v8 = predict_and_draw(model_v8, image_path, "YOLOv11")
-        st.image(pred_img_v8, caption="YOLOv11 Prediction", width="200")
+        st.image(pred_img_v8, caption="YOLOv11 Prediction", width=200)
         st.dataframe(pd.DataFrame(data_v8).drop(columns=["Image Path"]))
 
     with col3:
         st.subheader("🔴 YOLOv8")
         pred_img_v4, data_v4 = predict_and_draw(model_v4, image_path, "YOLOv8")
-        st.image(pred_img_v4, caption="YOLOv8 Prediction", width="200")
+        st.image(pred_img_v4, caption="YOLOv8 Prediction", width=200)
         st.dataframe(pd.DataFrame(data_v4).drop(columns=["Image Path"]))
 
     # --------- PDF GENERATION ---------
