@@ -9,4 +9,3 @@ requests
 ultralytics
 torch
 fpdf2
-ImageOps
