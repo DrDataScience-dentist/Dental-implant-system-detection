@@ -10,6 +10,7 @@ import os
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
+
 st.markdown(
     """
     <style>
