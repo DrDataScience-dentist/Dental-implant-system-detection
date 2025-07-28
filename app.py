@@ -112,9 +112,8 @@ if uploaded_file:
         pdf.add_page()
         # Add header image (make sure width fits within A4 page — max ~190mm)
         pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
-        pdf.ln(60)
 # Adjust this value based on header image height
-        pdf.set_font("Arial", size=14)
+        pdf.set_font("Helvetica", size=14)
         pdf.cell(200, 10, txt="Implant Detection Report", ln=True, align='C')
         pdf.ln(10)
 
