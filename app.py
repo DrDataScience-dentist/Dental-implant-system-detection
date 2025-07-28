@@ -13,7 +13,7 @@ st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three models: YOLOv8, YOLOv11, and RFDETR")
 
 # --------- ROBOTFLOW API INIT -----------
-rf = Roboflow(api_key="your_api_key_here")  # Replace with your API key
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")  # Replace with your API key
 
 # --------- ROBOTFLOW MODELS -----------
 project = rf.workspace("implant-system-identification").project("implant-system-detection")
