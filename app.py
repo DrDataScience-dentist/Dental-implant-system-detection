@@ -42,24 +42,32 @@ if uploaded_file:
         draw = ImageDraw.Draw(img)
         data = []
 
-st.sidebar.header("🔧 Prediction Settings")
-confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
-overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
+        st.sidebar.header("🔧 Prediction Settings")
+        confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
+        overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
 
 
-        for pred in predictions:
-            class_name = pred['class']
-            confidence = round(pred['confidence'] * 100, 2)
-            x, y, width, height = pred['x'], pred['y'], pred['width'], pred['height']
-            xmin = x - width / 2
-            ymin = y - height / 2
-            xmax = x + width / 2
-            ymax = y + height / 2
-            draw.rectangle([xmin, ymin, xmax, ymax], outline="red", width=3)
-            draw.text((xmin, ymin - 10), f"{class_name} ({confidence}%)", fill="red")
-            data.append({"Class": class_name, "Confidence (%)": confidence})
+        def predict_and_draw(model, image_path):
+    result = model.predict(image_path, confidence=confidence, overlap=overlap).json()
+    predictions = result['predictions']
 
-        return img, data
+    img = Image.open(image_path).convert("RGB")
+    draw = ImageDraw.Draw(img)
+    data = []
+
+    for pred in predictions:
+        class_name = pred['class']
+        confidence_score = round(pred['confidence'] * 100, 2)
+        x, y, width, height = pred['x'], pred['y'], pred['width'], pred['height']
+        xmin = x - width / 2
+        ymin = y - height / 2
+        xmax = x + width / 2
+        ymax = y + height / 2
+        draw.rectangle([xmin, ymin, xmax, ymax], outline="red", width=3)
+        draw.text((xmin, ymin - 10), f"{class_name} ({confidence_score}%)", fill="red")
+        data.append({"Class": class_name, "Confidence (%)": confidence_score})
+
+    return img, data
 
     col1, col2, col3 = st.columns(3)
 
