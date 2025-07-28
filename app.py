@@ -110,17 +110,17 @@ if uploaded_file:
             st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
             st.dataframe(pd.DataFrame(data_v4).drop(columns=["Image Path"]))
 
-    if st.button("Generate PDF Report"):
-        pdf = FPDF()
-        pdf.set_auto_page_break(auto=True, margin=15)
-    
-        # Add first page with header
-        pdf.add_page()
-        pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
-        pdf.ln(35)
-        pdf.set_font("Courier", style='B', size=16)
-        pdf.cell(190, 10, txt="IMPLANT DETECTION REPORT", ln=True, align='C')
-        pdf.ln(10)
+if st.button("Generate PDF Report"):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+        # First page with header
+    pdf.add_page()
+    pdf.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png", x=10, y=10, w=190)
+    pdf.ln(35)
+    pdf.set_font("Courier", style='B', size=16)
+    pdf.cell(190, 10, txt="IMPLANT DETECTION REPORT", ln=True, align='C')
+    pdf.ln(10)
 
     # -------- FUNCTION TO ADD ONE PREDICTION PER PAGE --------
     def add_each_implant(title, data):
