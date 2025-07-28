@@ -121,13 +121,13 @@ if uploaded_file:
 st.markdown("""
 ### 📬 Contact
 <a href="mailto:drbalaganesh.dentist" target="_blank">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30" style="margin-right: 10px;">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" width="30" style="margin: 10px;">
 </a>
 <a href="https://github.com/balaganesh7601" target="_blank">
-  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30" style="margin-right: 10px;">
+  <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" width="30" style="margin: 10px;">
 </a>
 <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
-  <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" style="margin-right: 10px;">
+  <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" width="30" style="margin: 10px;">
 </a>
 <a href="https://www.instagram.com/_bala.7601/" target="_blank">
   <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" width="30">
