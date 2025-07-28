@@ -109,16 +109,21 @@ if uploaded_file:
         pdf = FPDF()
 
         # --------- Header Page ---------
+       # --------- Header Page ---------
         pdf.add_page()
         header_url = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png"
         header_path = os.path.join(tempfile.gettempdir(), "header.png")
         urllib.request.urlretrieve(header_url, header_path)
         pdf.image(header_path, x=10, y=10, w=190)
+        
+        # Title Section
         pdf.set_y(80)
         pdf.set_font("Courier", style='B', size=16)
-        pdf.cell(190, 10, txt="IMPLANT SYSTEM DETECTION REPORT", ln=True, align='C')
+        pdf.cell(pdf.w - 2 * pdf.l_margin, 10, txt="IMPLANT SYSTEM DETECTION REPORT", ln=True, align='C')
+        
         pdf.set_font("Courier", style='B', size=14)
-        pdf.cell(200, 10, txt="IMPLANT REPORT", ln=True, align='C')
+        pdf.cell(pdf.w - 2 * pdf.l_margin, 10, txt="IMPLANT REPORT", ln=True, align='C')
+
 
         def add_each_implant(title, data):
             title_clean = title.encode("ascii", "ignore").decode()
