@@ -122,7 +122,8 @@ st.markdown("""
     .footer {
         position: fixed;
         bottom: 0;
-        width: 100%;
+        left: 50%;
+        transform: translateX(-50%);
         text-align: center;
         padding: 10px 0;
         background-color: transparent;
@@ -134,7 +135,7 @@ st.markdown("""
         color: #444;
     }
     .footer a img {
-        margin: 0 12px;
+        margin: 0 10px;
         vertical-align: middle;
         width: 35px;
     }
