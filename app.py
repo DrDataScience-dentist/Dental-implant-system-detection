@@ -10,6 +10,34 @@ import os
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
+st.markdown(
+    """
+    <style>
+    .header-img-light {
+        display: block;
+    }
+    .header-img-dark {
+        display: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .header-img-light {
+            display: none;
+        }
+        .header-img-dark {
+            display: block;
+        }
+    }
+    </style>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="header_light.png" class="header-img-light" style="width: 80%; border-radius: 12px;" />
+        <img src="header_dark.png" class="header-img-dark" style="width: 80%; border-radius: 12px;" />
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
