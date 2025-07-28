@@ -5,13 +5,10 @@ import pandas as pd
 import datetime
 import os
 import io
-import base64
 from google.oauth2 import service_account
 import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-from pydrive.files import FileNotUploadedError
-from pydrive.auth import ServiceAccountCredentials
 
 # Streamlit config
 st.set_page_config(page_title="Multi-Model Implant Detection", layout="centered")
@@ -50,8 +47,10 @@ model_v4 = rf.workspace(workspace).project(project_name).version(4).model  # YOL
 uploaded_file = st.file_uploader("Upload an OPG/RVG image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    # Read bytes once and reuse
+    image_bytes = uploaded_file.read()
+    img = Image.open(io.BytesIO(image_bytes))
+    st.image(img, caption="Uploaded Image", use_column_width=True)
 
     # Form Inputs
     with st.form("input_form"):
@@ -62,28 +61,26 @@ if uploaded_file:
 
     if submit_btn:
         with st.spinner("Analyzing with all models..."):
-            # Save temp image
-            image_bytes = uploaded_file.read()
-            img = Image.open(io.BytesIO(image_bytes))
+            # Save temp image for prediction and upload
             temp_path = "/tmp/temp_img.jpg"
             img.save(temp_path)
 
+            # Predict
             pred_v7 = model_v7.predict(temp_path).json()
             pred_v8 = model_v8.predict(temp_path).json()
             pred_v4 = model_v4.predict(temp_path).json()
 
-            # Create readable strings
             def extract_labels(pred):
-                return ", ".join([p["class"] for p in pred["predictions"]]) or "No detections"
+                return ", ".join([p["class"] for p in pred.get("predictions", [])]) or "No detections"
 
             pred_labels_v7 = extract_labels(pred_v7)
             pred_labels_v8 = extract_labels(pred_v8)
             pred_labels_v4 = extract_labels(pred_v4)
 
-            # Save image to Google Drive
+            # Upload image to Google Drive
             drive_folder_id = st.secrets["drive_folder_id"]
             gfile = drive.CreateFile({'title': uploaded_file.name, "parents": [{"id": drive_folder_id}]})
-            gfile.SetContentString(base64.b64encode(image_bytes).decode())
+            gfile.SetContentFile(temp_path)
             gfile.Upload()
 
             # Log to Google Sheet
