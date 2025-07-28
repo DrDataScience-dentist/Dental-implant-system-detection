@@ -10,23 +10,18 @@ import urllib.request
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 
-st.markdown(
-    """
-    <style>
-    .main .block-container {
-        padding: 0;
-    }
-    .full-width-header {
-        display: block;
-        width: 100%;
-        height: auto;
-        margin: 0 auto;
-    }
-    </style>
-    <img class="full-width-header" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png">
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<style>
+.main .block-container { padding: 0; }
+.full-width-header {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+</style>
+<img class="full-width-header" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png">
+""", unsafe_allow_html=True)
 
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
@@ -36,18 +31,17 @@ model_v4 = rf.workspace("implant-system-identification").project("implant-system
 
 # --------- SIDEBAR SETTINGS ---------
 st.sidebar.header("🔧 Prediction Settings")
-confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
-overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
+confidence = st.sidebar.slider("Confidence Threshold (%)", 10, 90, 40, 5)
+overlap = st.sidebar.slider("Overlap Threshold (%)", 0, 50, 30, 5)
 
 # --------- PREDICTION FUNCTION ---------
 def predict_and_draw(model, image_path, tag):
     result = model.predict(image_path, confidence=confidence, overlap=overlap).json()
     predictions = result['predictions']
-
     img = Image.open(image_path).convert("RGB")
     data = []
 
-    for i, pred in enumerate(predictions):
+    for pred in predictions:
         class_name = pred['class']
         confidence_score = round(pred['confidence'] * 100, 2)
         x, y, width, height = pred['x'], pred['y'], pred['width'], pred['height']
@@ -56,12 +50,10 @@ def predict_and_draw(model, image_path, tag):
         xmax = x + width / 2
         ymax = y + height / 2
 
-        # Draw on image
         draw = ImageDraw.Draw(img.copy())
         draw.rectangle([xmin, ymin, xmax, ymax], outline="red", width=3)
         draw.text((xmin, ymin - 10), f"{class_name} ({confidence_score}%)", fill="red")
 
-        # Save cropped box image
         box_img = img.crop((xmin, ymin, xmax, ymax))
         temp_box = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
         box_img.save(temp_box.name)
@@ -74,10 +66,10 @@ def predict_and_draw(model, image_path, tag):
 
     return img, data
 
-# --------- UPLOAD IMAGE ---------
+# --------- FILE UPLOAD ---------
 uploaded_file = st.file_uploader("Upload your OPG/RVG image", type=["jpg", "jpeg", "png"])
 
-# --------- MAIN DISPLAY ---------
+# --------- MAIN CONTENT ---------
 if uploaded_file:
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded Image", use_container_width=True)
@@ -109,56 +101,54 @@ if uploaded_file:
     # --------- PDF GENERATION ---------
     if st.button("Generate PDF Report"):
         pdf = FPDF()
-        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)
 
-        # --------- Header Image ---------
         # --------- Header Page ---------
         pdf.add_page()
+        header_path = os.path.join(tempfile.gettempdir(), "header.png")
+        urllib.request.urlretrieve("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header.png", header_path)
         pdf.image(header_path, x=10, y=10, w=190)
-        pdf.set_y(80)  # Move below the image
-        pdf.set_font("Courier", style='B', size=16)
-        pdf.cell(190, 10, txt="IMPLANT SYSTEM DETECTION REPORT", ln=True, align='C')
+        pdf.set_y(90)
+        pdf.set_font("Courier", 'B', 16)
+        pdf.cell(190, 10, "IMPLANT SYSTEM DETECTION REPORT", ln=True, align='C')
 
-        pdf.set_font("Courier", style='B', size=14)
-        pdf.cell(200, 10, txt="IMPLANT REPORT", ln=True, align='C')
-
+        # --------- Add Predictions ---------
         def add_each_implant(title, data):
             title_clean = title.encode("ascii", "ignore").decode()
             for item in data:
                 pdf.add_page()
-                pdf.set_font("Courier", style='B', size=14)
-                pdf.cell(190, 10, txt=title_clean, ln=True, align='C')
+                pdf.set_font("Courier", 'B', 14)
+                pdf.cell(190, 10, title_clean, ln=True, align='C')
                 pdf.ln(10)
                 if os.path.exists(item["Image Path"]):
-                    pdf.image(item["Image Path"], x=(210 - 80) // 2, w=80)
+                    pdf.image(item["Image Path"], x=(210 - 100) // 2, w=100)
                     pdf.ln(5)
                 pdf.set_font("Arial", size=12)
-                pdf.cell(190, 10, txt=f"Class: {item['Class']}", ln=True, align='C')
-                pdf.cell(190, 10, txt=f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
+                pdf.cell(190, 10, f"Class: {item['Class']}", ln=True, align='C')
+                pdf.cell(190, 10, f"Confidence: {item['Confidence (%)']}%", ln=True, align='C')
                 pdf.ln(5)
 
         add_each_implant("RF DETR", data_v7)
         add_each_implant("YOLOv11", data_v8)
         add_each_implant("YOLOv8", data_v4)
 
-       # --------- Footer Page ---------
+        # --------- Footer Page ---------
         pdf.add_page()
-        pdf.set_y(100)  # Vertically center content
-        pdf.set_font("Arial", style='B', size=14)
-        pdf.cell(190, 10, txt="Created by Dr Balaganesh P", ln=True, align='C')
+        pdf.set_y(100)
+        pdf.set_font("Arial", 'B', 14)
+        pdf.cell(190, 10, "Created by Dr Balaganesh P", ln=True, align='C')
         pdf.ln(10)
-        
-        # Download icons and add them centered
+
         icons = {
             "Gmail": ("https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png", "mailto:drbalaganesh.dentist"),
             "GitHub": ("https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", "https://github.com/DrDataScience-dentist"),
             "LinkedIn": ("https://cdn-icons-png.flaticon.com/512/174/174857.png", "https://www.linkedin.com/in/drbalaganeshdentist/"),
             "Instagram": ("https://cdn-icons-png.flaticon.com/512/2111/2111463.png", "https://www.instagram.com/_bala.7601/")
         }
-        
-        start_x = (210 - (len(icons) * 25)) // 2  # Center icons horizontally
+
+        start_x = (210 - (len(icons) * 25)) // 2
         y_pos = pdf.get_y()
-        
+
         for i, (name, (url, link)) in enumerate(icons.items()):
             icon_path = os.path.join(tempfile.gettempdir(), f"{name}.png")
             urllib.request.urlretrieve(url, icon_path)
@@ -166,13 +156,12 @@ if uploaded_file:
             pdf.image(icon_path, x=x_pos, y=y_pos, w=15, h=15)
             pdf.link(x=x_pos, y=y_pos, w=15, h=15, link=link)
 
+        # --------- Save PDF and Offer Download ---------
+        pdf_path = os.path.join(tempfile.gettempdir(), "implant_report.pdf")
+        pdf.output(pdf_path)
 
-        # --------- Save PDF and Download Button ---------
-        pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
-        pdf.output(pdf_output_path)
-
-        with open(pdf_output_path, "rb") as f:
-            st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
+        with open(pdf_path, "rb") as f:
+            st.download_button("📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
 st.markdown("""
     <style>
