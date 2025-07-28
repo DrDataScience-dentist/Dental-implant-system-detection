@@ -42,6 +42,11 @@ if uploaded_file:
         draw = ImageDraw.Draw(img)
         data = []
 
+st.sidebar.header("🔧 Prediction Settings")
+confidence = st.sidebar.slider("Confidence Threshold (%)", min_value=10, max_value=90, value=40, step=5)
+overlap = st.sidebar.slider("Overlap Threshold (%)", min_value=0, max_value=50, value=30, step=5)
+
+
         for pred in predictions:
             class_name = pred['class']
             confidence = round(pred['confidence'] * 100, 2)
