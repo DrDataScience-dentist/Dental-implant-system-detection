@@ -77,37 +77,58 @@ if uploaded_file:
         st.dataframe(pd.DataFrame(data_v4))
 
     if st.button("Generate PDF Report"):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=14)
-        pdf.cell(200, 10, txt="Implant Detection Report", ln=True, align='C')
-        pdf.ln(10)
+    from PIL import ImageOps
 
-        def add_prediction_section(title, data):
-            pdf.set_font("Arial", style='B', size=12)
-            pdf.cell(200, 10, txt=title, ln=True)
-            pdf.set_font("Arial", size=11)
-            for item in data:
-                pdf.cell(200, 10, txt=f"Class: {item['Class']}, Confidence: {item['Confidence (%)']}%", ln=True)
-            pdf.ln(5)
+    # Save original and predicted images as temp files
+    orig_path = os.path.join(tempfile.gettempdir(), "original.jpg")
+    pred_path_v7 = os.path.join(tempfile.gettempdir(), "pred_v7.jpg")
+    pred_path_v8 = os.path.join(tempfile.gettempdir(), "pred_v8.jpg")
+    pred_path_v4 = os.path.join(tempfile.gettempdir(), "pred_v4.jpg")
 
-        add_prediction_section("RF DETR", data_v7)
-        add_prediction_section("YOLOv11 - YOLOv8", data_v8)
-        add_prediction_section("YOLOv8 - Original", data_v4)
+    image.save(orig_path)
+    pred_img_v7.save(pred_path_v7)
+    pred_img_v8.save(pred_path_v8)
+    pred_img_v4.save(pred_path_v4)
 
-        pdf.ln(10)
-        pdf.set_font("Arial", size=10)
-        pdf.cell(200, 10, txt="Contact: drbalaganesh.dentist", ln=True, link="mailto:drbalaganesh.dentist")
-        pdf.cell(200, 10, txt="LinkedIn", ln=True, link="https://www.linkedin.com/in/drbalaganeshdentist/")
-        pdf.cell(200, 10, txt="GitHub", ln=True, link="https://github.com/balaganesh7601")
-        pdf.cell(200, 10, txt="Instagram", ln=True, link="https://www.instagram.com/_bala.7601/")
-        pdf.cell(200, 10, txt="Created by Dr Balaganesh P", ln=True)
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=14)
+    pdf.cell(200, 10, txt="🦷 Implant Detection Report", ln=True, align='C')
+    pdf.ln(5)
 
-        pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
-        pdf.output(pdf_output_path)
+    # ---------- ORIGINAL IMAGE ----------
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(200, 10, txt="Original Uploaded Image", ln=True)
+    pdf.image(orig_path, w=180)
+    pdf.ln(10)
 
-        with open(pdf_output_path, "rb") as f:
-            st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
+    def add_prediction_section(title, pred_img_path, data):
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(200, 10, txt=title, ln=True)
+        pdf.image(pred_img_path, w=180)
+        pdf.set_font("Arial", size=11)
+        for item in data:
+            pdf.cell(200, 10, txt=f"• Class: {item['Class']}, Confidence: {item['Confidence (%)']}%", ln=True)
+        pdf.ln(5)
+
+    # ---------- MODEL PREDICTIONS ----------
+    add_prediction_section("🔷 RF DETR Prediction", pred_path_v7, data_v7)
+    add_prediction_section("🔶 YOLOv11 - YOLOv8 Prediction", pred_path_v8, data_v8)
+    add_prediction_section("🔴 YOLOv8 - Original Prediction", pred_path_v4, data_v4)
+
+    # ---------- FOOTER ----------
+    pdf.set_font("Arial", size=10)
+    pdf.cell(200, 10, txt="Contact: drbalaganesh.dentist", ln=True, link="mailto:drbalaganesh.dentist")
+    pdf.cell(200, 10, txt="LinkedIn", ln=True, link="https://www.linkedin.com/in/drbalaganeshdentist/")
+    pdf.cell(200, 10, txt="GitHub", ln=True, link="https://github.com/balaganesh7601")
+    pdf.cell(200, 10, txt="Instagram", ln=True, link="https://www.instagram.com/_bala.7601/")
+    pdf.cell(200, 10, txt="Created by Dr Balaganesh P", ln=True)
+
+    pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
+    pdf.output(pdf_output_path)
+
+    with open(pdf_output_path, "rb") as f:
+        st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
 
 st.markdown("""
     <style>
