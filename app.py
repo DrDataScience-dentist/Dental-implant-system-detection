@@ -12,10 +12,9 @@ st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
 # Detect Streamlit theme
-# Detect Streamlit theme
-theme = st.get_option("theme.base")
+theme = st.runtime.scriptrunner.script_run_context.get_script_run_ctx().session_info.session_state.get("theme.base", "light")
 
-# Show correct image based on theme
+# Show the correct image
 if theme == "dark":
     st.image("https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png", use_container_width=True)
 else:
