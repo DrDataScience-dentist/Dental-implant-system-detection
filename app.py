@@ -9,6 +9,49 @@ import requests
 from io import BytesIO
 
 # --------- PAGE CONFIG -----------
+
+
+st.markdown("""
+    <style>
+    .top-banner {
+        background-color: #eaf3fc;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 25px;
+    }
+
+    .top-banner img {
+        width: 42px;
+        height: 42px;
+    }
+
+    .top-banner-text h1 {
+        margin: 0;
+        font-size: 26px;
+        color: #1a3c6e;
+        font-weight: 700;
+    }
+
+    .top-banner-text p {
+        margin: 0;
+        font-size: 15px;
+        color: #3a3a3a;
+    }
+    </style>
+
+    <div class="top-banner">
+        <img src="https://cdn-icons-png.flaticon.com/512/483/483361.png">
+        <div class="top-banner-text">
+            <h1>Implant-CoPilot</h1>
+            <p>Your AI Companion for Dental Implant Evaluation</p>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
