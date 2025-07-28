@@ -112,11 +112,12 @@ if uploaded_file:
         pdf.add_page()
 
         # --------- Header Image ---------
-        header_url = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_pdf.png"
-        header_path = os.path.join(tempfile.gettempdir(), "header.png")
-        urllib.request.urlretrieve(header_url, header_path)
+        # --------- Header Page ---------
+        pdf.add_page()
         pdf.image(header_path, x=10, y=10, w=190)
-        pdf.ln(40)
+        pdf.set_y(80)  # Move below the image
+        pdf.set_font("Courier", style='B', size=16)
+        pdf.cell(190, 10, txt="IMPLANT SYSTEM DETECTION REPORT", ln=True, align='C')
 
         pdf.set_font("Courier", style='B', size=14)
         pdf.cell(200, 10, txt="IMPLANT REPORT", ln=True, align='C')
@@ -140,30 +141,31 @@ if uploaded_file:
         add_each_implant("YOLOv11", data_v8)
         add_each_implant("YOLOv8", data_v4)
 
-        # --------- Footer Page ---------
+       # --------- Footer Page ---------
         pdf.add_page()
+        pdf.set_y(100)  # Vertically center content
         pdf.set_font("Arial", style='B', size=14)
         pdf.cell(190, 10, txt="Created by Dr Balaganesh P", ln=True, align='C')
         pdf.ln(10)
-
-        # Download icons to temporary folder
+        
+        # Download icons and add them centered
         icons = {
             "Gmail": ("https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png", "mailto:drbalaganesh.dentist"),
             "GitHub": ("https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", "https://github.com/DrDataScience-dentist"),
             "LinkedIn": ("https://cdn-icons-png.flaticon.com/512/174/174857.png", "https://www.linkedin.com/in/drbalaganeshdentist/"),
             "Instagram": ("https://cdn-icons-png.flaticon.com/512/2111/2111463.png", "https://www.instagram.com/_bala.7601/")
         }
-
-        start_x = 55
-        spacing = 25
+        
+        start_x = (210 - (len(icons) * 25)) // 2  # Center icons horizontally
         y_pos = pdf.get_y()
-
+        
         for i, (name, (url, link)) in enumerate(icons.items()):
             icon_path = os.path.join(tempfile.gettempdir(), f"{name}.png")
             urllib.request.urlretrieve(url, icon_path)
-            x_pos = start_x + i * spacing
+            x_pos = start_x + i * 25
             pdf.image(icon_path, x=x_pos, y=y_pos, w=15, h=15)
             pdf.link(x=x_pos, y=y_pos, w=15, h=15, link=link)
+
 
         # --------- Save PDF and Download Button ---------
         pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
