@@ -1,5 +1,6 @@
 streamlit
 google-auth
+gspread
 roboflow
 opencv-python-headless
 Pillow
