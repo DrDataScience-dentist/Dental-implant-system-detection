@@ -10,17 +10,18 @@ import os
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
 st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
+
 # Detect Streamlit theme
 theme = st.get_option("theme.base")
 
-# Choose image based on theme
+# Choose header image based on current theme
 if theme == "dark":
     header_img = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png"
 else:
     header_img = "https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_light.png"
 
-# Show the image
-st.image(header_img, use_column_width=True)
+# Show header image
+st.image(header_img, use_container_width=True)
 
 
 
