@@ -23,37 +23,6 @@ else:
 # Show header image
 st.image(header_img, use_container_width=True)
 
-
-
-st.markdown(
-    """
-    <style>
-    .header-img-light {
-        display: block;
-    }
-    .header-img-dark {
-        display: none;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .header-img-light {
-            display: none;
-        }
-        .header-img-dark {
-            display: block;
-        }
-    }
-    </style>
-
-    <div style="text-align: center; margin-bottom: 20px;">
-        <img class="header-img-light" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_light.png" style="width: 80%; border-radius: 12px;" />
-        <img class="header-img-dark" src="https://raw.githubusercontent.com/DrDataScience-dentist/Dental-implant-system-detection/main/header_dark.png" style="width: 80%; border-radius: 12px;" />
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
 # --------- ROBOFLOW INIT -----------
 rf = Roboflow(api_key=st.secrets["roboflow"]["api_key"])
 
