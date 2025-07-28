@@ -1,114 +1,159 @@
 import streamlit as st
 from roboflow import Roboflow
-from PIL import Image
+from PIL import Image, ImageDraw
+from fpdf import FPDF
 import pandas as pd
-import datetime
+import tempfile
 import os
-import io
-import base64
-from google.oauth2 import service_account
-import gspread
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 
-# Streamlit config
-st.set_page_config(page_title="Multi-Model Implant Detection", layout="centered")
+# --------- PAGE CONFIG -----------
+st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 st.title("🦷 Multi-Model Dental Implant Detection")
+st.markdown("Upload an OPG/RVG image to detect implants using three different AI models. The results are shown below the image.")
 
-# ---- Authenticate Google Sheet and Drive ----
-credentials_dict = st.secrets["gcp_service_account"]
-credentials = service_account.Credentials.from_service_account_info(
-    credentials_dict,
-    scopes=[
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive.file"
-    ]
-)
+# --------- INITIALIZE ROBOFLOW MODELS ---------
+rf = Roboflow(api_key="4ZQ2GRG22mUeqtXFX26n")
 
-# Authorize Google Sheets
-gc = gspread.authorize(credentials)
+project_v7 = rf.workspace("implant-system-identification").project("implant-system-detection")
+model_v7 = project_v7.version(7).model
 
-# Build Drive service
-drive_service = build('drive', 'v3', credentials=credentials)
+project_v8 = rf.workspace("implant-system-identification").project("implant-system-detection")
+model_v8 = project_v8.version(8).model
 
-# Google Sheet setup
-spreadsheet_id = "1J3_VBfI88EfNnPnrbjnnPQeHD5atOrVa9JTNfhgx6G4"
-spreadsheet = gc.open_by_key(spreadsheet_id)
+project_v4 = rf.workspace("implant-system-identification").project("implant-system-detection")
+model_v4 = project_v4.version(4).model
 
-worksheet = spreadsheet.sheet1
-
-# Roboflow models
-rf = Roboflow(api_key=st.secrets["ROBOFLOW_API_KEY"])
-workspace = "implant-system-identification"
-project_name = "implant-system-detection"
-
-model_v7 = rf.workspace(workspace).project(project_name).version(7).model  # RFDETR
-model_v8 = rf.workspace(workspace).project(project_name).version(8).model  # YOLOv11
-model_v4 = rf.workspace(workspace).project(project_name).version(4).model  # YOLOv8
-
-# ---- Upload image ----
-uploaded_file = st.file_uploader("Upload an OPG/RVG image", type=["jpg", "jpeg", "png"])
-
-def upload_to_drive(file_path, filename, folder_id):
-    file_metadata = {
-        'name': filename,
-        'parents': [folder_id]
-    }
-    media = MediaFileUpload(file_path, mimetype='image/jpeg')
-    file = drive_service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    ).execute()
-    return file.get('id')
+# --------- UPLOAD IMAGE ---------
+uploaded_file = st.file_uploader("Upload your OPG/RVG image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
-    # Form Inputs
-    with st.form("input_form"):
-        dentist_prediction = st.text_input("Dentist Predicted Implant System")
-        placement_date = st.date_input("Implant Placement Date", datetime.date.today())
-        consent = st.checkbox("Patient consents to use this image for research purposes")
-        submit_btn = st.form_submit_button("Run Models and Log Data")
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as temp_file:
+        image.save(temp_file.name)
+        image_path = temp_file.name
 
-    if submit_btn:
-        with st.spinner("Analyzing with all models..."):
-            # Save temp image
-            image_bytes = uploaded_file.read()
-            img = Image.open(io.BytesIO(image_bytes))
-            temp_path = "/tmp/temp_img.jpg"
-            img.save(temp_path)
+    def predict_and_draw(model, image_path):
+        result = model.predict(image_path, confidence=40, overlap=30).json()
+        predictions = result['predictions']
 
-            # Run predictions
-            pred_v7 = model_v7.predict(temp_path).json()
-            pred_v8 = model_v8.predict(temp_path).json()
-            pred_v4 = model_v4.predict(temp_path).json()
+        img = Image.open(image_path).convert("RGB")
+        draw = ImageDraw.Draw(img)
+        data = []
 
-            # Extract labels
-            def extract_labels(pred):
-                return ", ".join([p["class"] for p in pred.get("predictions", [])]) or "No detections"
+        for pred in predictions:
+            class_name = pred['class']
+            confidence = round(pred['confidence'] * 100, 2)
+            x, y, width, height = pred['x'], pred['y'], pred['width'], pred['height']
+            xmin = x - width / 2
+            ymin = y - height / 2
+            xmax = x + width / 2
+            ymax = y + height / 2
+            draw.rectangle([xmin, ymin, xmax, ymax], outline="red", width=3)
+            draw.text((xmin, ymin - 10), f"{class_name} ({confidence}%)", fill="red")
+            data.append({"Class": class_name, "Confidence (%)": confidence})
 
-            pred_labels_v7 = extract_labels(pred_v7)
-            pred_labels_v8 = extract_labels(pred_v8)
-            pred_labels_v4 = extract_labels(pred_v4)
+        return img, data
 
-            # Upload image to Google Drive
-            drive_folder_id = st.secrets["drive_folder_id"]
-            uploaded_file_id = upload_to_drive(temp_path, uploaded_file.name, drive_folder_id)
+    col1, col2, col3 = st.columns(3)
 
-            # Log to Google Sheet
-            row = [
-                uploaded_file.name,
-                str(datetime.datetime.now()),
-                dentist_prediction,
-                str(placement_date),
-                "Yes" if consent else "No",
-                pred_labels_v7,
-                pred_labels_v8,
-                pred_labels_v4,
-                uploaded_file_id  # Optionally log the Drive file ID
-            ]
-            worksheet.append_row(row)
-            st.success("✅ Data logged and image saved to Drive.")
+    with col1:
+        st.subheader("🔷RF DETR")
+        pred_img_v7, data_v7 = predict_and_draw(model_v7, image_path)
+        st.image(pred_img_v7, caption="RF DETR", use_container_width=True)
+        st.dataframe(pd.DataFrame(data_v7))
+
+    with col2:
+        st.subheader("🔶 YOLOv11 - YOLOv8")
+        pred_img_v8, data_v8 = predict_and_draw(model_v8, image_path)
+        st.image(pred_img_v8, caption="YOLOv11 Prediction", use_container_width=True)
+        st.dataframe(pd.DataFrame(data_v8))
+
+    with col3:
+        st.subheader("🔴 YOLOv8 - Original")
+        pred_img_v4, data_v4 = predict_and_draw(model_v4, image_path)
+        st.image(pred_img_v4, caption="YOLOv8 Prediction", use_container_width=True)
+        st.dataframe(pd.DataFrame(data_v4))
+
+    if st.button("Generate PDF Report"):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=14)
+        pdf.cell(200, 10, txt="Implant Detection Report", ln=True, align='C')
+        pdf.ln(10)
+
+        def add_prediction_section(title, data):
+            pdf.set_font("Arial", style='B', size=12)
+            pdf.cell(200, 10, txt=title, ln=True)
+            pdf.set_font("Arial", size=11)
+            for item in data:
+                pdf.cell(200, 10, txt=f"Class: {item['Class']}, Confidence: {item['Confidence (%)']}%", ln=True)
+            pdf.ln(5)
+
+        add_prediction_section("RF DETR", data_v7)
+        add_prediction_section("YOLOv11 - YOLOv8", data_v8)
+        add_prediction_section("YOLOv8 - Original", data_v4)
+
+        pdf.ln(10)
+        pdf.set_font("Arial", size=10)
+        pdf.cell(200, 10, txt="Contact: drbalaganesh.dentist", ln=True, link="mailto:drbalaganesh.dentist")
+        pdf.cell(200, 10, txt="LinkedIn", ln=True, link="https://www.linkedin.com/in/drbalaganeshdentist/")
+        pdf.cell(200, 10, txt="GitHub", ln=True, link="https://github.com/balaganesh7601")
+        pdf.cell(200, 10, txt="Instagram", ln=True, link="https://www.instagram.com/_bala.7601/")
+        pdf.cell(200, 10, txt="Created by Dr Balaganesh P", ln=True)
+
+        pdf_output_path = os.path.join(tempfile.gettempdir(), "detection_report.pdf")
+        pdf.output(pdf_output_path)
+
+        with open(pdf_output_path, "rb") as f:
+            st.download_button(label="📄 Download Report PDF", data=f, file_name="ImplantDetectionReport.pdf")
+
+st.markdown("""
+    <style>
+    .footer-container {
+        margin-top: 50px;
+        text-align: center;
+        width: 100%;
+    }
+    .footer-text {
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 8px;
+    }
+    .footer-icons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .footer-icons a img {
+        width: 30px;
+        transition: transform 0.2s;
+    }
+    .footer-icons a img:hover {
+        transform: scale(1.2);
+    }
+    .block-container {
+        padding-bottom: 80px;
+    }
+    </style>
+    <div class="footer-container">
+        <p class="footer-text">Created by Dr Balaganesh P</p>
+        <div class="footer-icons">
+            <a href="mailto:drbalaganesh.dentist" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png">
+            </a>
+            <a href="https://github.com/DrDataScience-dentist" target="_blank">
+                <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+            </a>
+            <a href="https://www.linkedin.com/in/drbalaganeshdentist/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png">
+            </a>
+            <a href="https://www.instagram.com/_bala.7601/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+            </a>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
