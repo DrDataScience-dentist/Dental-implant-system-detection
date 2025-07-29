@@ -9,3 +9,4 @@ requests
 ultralytics
 torch
 fpdf2
+opencv-python
