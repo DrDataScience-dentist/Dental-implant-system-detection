@@ -3,10 +3,9 @@ google-auth
 gspread
 roboflow
 PyDrive
-opencv-python-headless
+opencv-python-headless==4.8.1.78
 Pillow
 requests
 ultralytics
 torch
 fpdf2
-opencv-python-headless
