@@ -8,11 +8,12 @@ import os
 import urllib.request
 import base64
 import cv2
+st.write("OpenCV version:", cv2.__version__)
+
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 
-st.write("OpenCV version:", cv2.__version__)
 
 st.markdown(
     """
