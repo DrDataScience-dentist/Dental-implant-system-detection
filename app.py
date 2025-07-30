@@ -7,6 +7,7 @@ import tempfile
 import os
 import urllib.request
 import base64
+import cv2
 
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
