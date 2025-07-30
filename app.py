@@ -11,6 +11,8 @@ import base64
 # --------- PAGE CONFIG -----------
 st.set_page_config(page_title="🦷 Multi-Model Implant Detection", layout="wide")
 
+st.write("OpenCV version:", cv2.__version__)
+
 st.markdown(
     """
     <style>
