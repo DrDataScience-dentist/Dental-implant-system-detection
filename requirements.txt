@@ -3,7 +3,7 @@ google-auth
 gspread
 roboflow
 PyDrive
-opencv-python-headless
+opencv-python-headless==4.8.0.76
 pillow
 requests
 ultralytics
