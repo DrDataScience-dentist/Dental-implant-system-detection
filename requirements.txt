@@ -4,7 +4,7 @@ gspread
 roboflow
 PyDrive
 opencv-python-headless
-Pillow
+pillow
 requests
 ultralytics
 torch
